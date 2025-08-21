@@ -43,7 +43,7 @@ pub(crate) fn validate_response_headers(
 pub(crate) fn split_url(url: &str) -> Result<(String, u16), UrlError> {
     let uri = url.parse::<http::Uri>()?;
     let domain = domain(&uri).ok_or(UrlError::Protocol)?;
-    let port = port(&uri).ok_or(UrlError::Host)?;
+    let port = uri.port_or_known_default().ok_or(UrlError::Protocol)?;
     Ok((domain, port))
 }
 
@@ -61,13 +61,5 @@ fn domain(uri: &http::Uri) -> Option<String> {
         };
 
         host.to_owned()
-    })
-}
-
-fn port(uri: &http::Uri) -> Option<u16> {
-    uri.port_u16().or_else(|| match uri.scheme_str() {
-        Some("wss") => Some(443),
-        Some("ws") => Some(80),
-        _ => None,
     })
 }
