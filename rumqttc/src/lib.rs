@@ -776,6 +776,7 @@ impl std::convert::TryFrom<url::Url> for MqttOptions {
         use std::collections::HashMap;
 
         let host = url.host_str().unwrap_or_default().to_owned();
+        log::debug!("host: {}", host);
 
         let (transport, default_port) = match url.scheme() {
             // Encrypted connections are supported, but require explicit TLS configuration. We fall
@@ -791,7 +792,7 @@ impl std::convert::TryFrom<url::Url> for MqttOptions {
             _ => return Err(OptionError::Scheme),
         };
 
-        let port = url.port().unwrap_or(default_port);
+        let port = url.port_or_known_default().unwrap_or(default_port);
 
         let mut queries = url.query_pairs().collect::<HashMap<_, _>>();
 
