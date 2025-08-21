@@ -40,13 +40,6 @@ pub(crate) fn validate_response_headers(
     Ok(())
 }
 
-pub(crate) fn split_url(url: &str) -> Result<(String, u16), UrlError> {
-    let uri = url.parse::<http::Uri>()?;
-    let domain = domain(&uri).ok_or(UrlError::Protocol)?;
-    let port = port(&uri).ok_or(UrlError::Host)?;
-    Ok((domain, port))
-}
-
 fn domain(uri: &http::Uri) -> Option<String> {
     uri.host().map(|host| {
         // If host is an IPv6 address, it might be surrounded by brackets. These brackets are

@@ -23,7 +23,7 @@ use crate::tls;
 
 #[cfg(feature = "websocket")]
 use {
-    crate::websockets::{split_url, validate_response_headers, UrlError},
+    crate::websockets::{validate_response_headers, UrlError},
     async_tungstenite::tungstenite::client::IntoClientRequest,
     ws_stream_tungstenite::WsStream,
 };
@@ -363,9 +363,9 @@ async fn network_connect(
     // For websockets domain and port are taken directly from `broker_addr` (which is a url).
     let (domain, port) = match options.transport() {
         #[cfg(feature = "websocket")]
-        Transport::Ws => split_url(&options.broker_addr)?,
+        Transport::Ws => (options.broker_addr.clone(), options.port),
         #[cfg(all(feature = "use-rustls", feature = "websocket"))]
-        Transport::Wss(_) => split_url(&options.broker_addr)?,
+        Transport::Wss(_) => (options.broker_addr.clone(), options.port),
         _ => options.broker_address(),
     };
 
